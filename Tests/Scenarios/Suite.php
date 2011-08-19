@@ -28,7 +28,7 @@
  */
 require_once dirname(__FILE__) . '/../bootstrap.php';
 require_once 'PHPUnit/Framework.php';
-require_once 'Tests/Scenarios/EasyPo/Suite.php';
+require_once 'Tests/Scenarios/EasyPO/Suite.php';
 /**
  * Scenarios Test-Suite.
  *
