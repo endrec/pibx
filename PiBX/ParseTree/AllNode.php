@@ -26,40 +26,45 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-require_once './PiBX/CodeGen.php';
-
+require_once 'PiBX/ParseTree/Tree.php';
 /**
- * Class autoloader.
- * @author Endre Czirbesz
- * @param string $class_name 
- */
-function __autoload($class_name) {
-    if (preg_match('|PiBX_ParseTree_[A-Z][a-zA-Z]+Node|', $class_name)) {
-        print $class_name . " will be loaded.\n";
-        require_once strtr($class_name, '_', '/') . '.php';
-    }
-    if (!class_exists($class_name, false)) {
-        print "Error: Class not found: $class_name";
-        print "Current directory: " . getcwd() . "\n";
-        exit(1);
-    }
-}
-
-/**
- * CodeGen is a command-line interface for PiBX_CodeGen.
+ * Represents a <code>&lt;all&gt;</code>-node of an XML-Schema.
  *
  * @author Christoph Gockel
  */
-print "PiBX - CodeGen\n";
+class PiBX_ParseTree_AllNode extends PiBX_ParseTree_Tree {
+    private $elementCount;
 
-$options = array();
+    public function  __construct(SimpleXMLElement $xml, $level = 0) {
+        parent::__construct($xml, $level);
 
-for ($i = 2; $i < $argc; $i++) {
-    $value = $argv[$i];
-    
-    if ($value == '--typechecks') {
-        $options['typechecks'] = true;
+        list($ns) = array_keys($xml->getNamespaces());
+
+        $this->elementCount = count($xml->children($ns, true));
+    }
+
+    public function getElementCount() {
+        if ($this->elementCount == 1) {
+            $child = $this->children[0];
+
+            if ($child instanceof PiBX_ParseTree_ElementNode) {
+                $max = $child->getMaxOccurs();
+                if ($max === 'unbounded') {
+                    return -1;
+                }
+            } else {
+                throw new RuntimeException('Currently not supported');
+            }
+        }
+
+        return $this->elementCount;
+    }
+
+    public function  accept(PiBX_ParseTree_Visitor_VisitorAbstract $v) {
+        $v->visitAllNode($this);
+
+        foreach ($this->children as $child) {
+            $child->accept($v);
+        }
     }
 }
-
-$c = new PiBX_CodeGen($argv[1], $options);

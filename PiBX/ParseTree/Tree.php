@@ -27,6 +27,25 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+if (!function_exists('__autoload')) {
+    /**
+     * Class autoloader.
+     * @author Endre Czirbesz
+     * @param string $class_name 
+     */
+    function __autoload($class_name) {
+        if (preg_match('|PiBX_ParseTree_[A-Z][a-zA-Z]+Node|', $class_name)) {
+            print $class_name . " will be loaded.\n";
+            require_once strtr($class_name, '_', '/') . '.php';
+        }
+        if (!class_exists($class_name, false)) {
+            print "Error: Class not found: $class_name";
+            print "Current directory: " . getcwd() . "\n";
+            exit(1);
+        }
+    }
+}
+
 /**
  * A PiBX_ParseTree_Tree represents the whole schema definition in a composite
  * object structure.

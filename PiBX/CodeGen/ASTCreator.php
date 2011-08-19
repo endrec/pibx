@@ -311,7 +311,7 @@ class PiBX_CodeGen_ASTCreator implements PiBX_ParseTree_Visitor_VisitorAbstract 
 
         if ($this->currentType() instanceof PiBX_AST_Type) {
             /**
-             * A sequence witin a Type means a list of
+             * A sequence within a Type means a list of
              * attributes are incoming.
              */
             $this->currentType()->setAttributeCount($tree->getElementCount());
@@ -337,9 +337,10 @@ class PiBX_CodeGen_ASTCreator implements PiBX_ParseTree_Visitor_VisitorAbstract 
     }
 
     function visitAllNode(PiBX_ParseTree_Tree $tree) {
-        $this->plowTypesForLevel($tree->getLevel());
-
-        $this->lastLevel = $tree->getLevel();
+//        $this->plowTypesForLevel($tree->getLevel());
+//
+//        $this->lastLevel = $tree->getLevel();
+        $this->visitSequenceNode($tree);
     }
 
     function visitChoiceNode(PiBX_ParseTree_Tree $tree) {

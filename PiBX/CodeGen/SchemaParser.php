@@ -28,15 +28,8 @@
  */
 require_once 'PiBX/CodeGen/TypeUsage.php';
 require_once 'PiBX/ParseTree/Tree.php';
-require_once 'PiBX/ParseTree/ChoiceNode.php';
-require_once 'PiBX/ParseTree/ComplexTypeNode.php';
-require_once 'PiBX/ParseTree/ElementNode.php';
-require_once 'PiBX/ParseTree/EnumerationNode.php';
-require_once 'PiBX/ParseTree/RestrictionNode.php';
-require_once 'PiBX/ParseTree/RootNode.php';
-require_once 'PiBX/ParseTree/SequenceNode.php';
-require_once 'PiBX/ParseTree/SimpleTypeNode.php';
-require_once 'PiBX/ParseTree/AttributeNode.php';
+/* Classes are autoloaded. */
+
 /**
  * The SchemaParser parses a given XML-Schema file.
  * While parsing, it creates the parse-tree.
@@ -125,28 +118,27 @@ class PiBX_CodeGen_SchemaParser {
         foreach ($xml->children($ns, true) as $child) {
             $name = (string)$child->getName();
 
-            if ($name == 'element') {
-                $newPart = new PiBX_ParseTree_ElementNode($child, $level);
-                $attributes = $child->attributes();
-                
-                $type = (string)$attributes['type'];
-                $type = $this->getStringWithoutNamespace($type);
-                
-                $this->typeUsage->addType($type);
-            } elseif ($name == 'simpleType') {
-                $newPart = new PiBX_ParseTree_SimpleTypeNode($child, $level);
-            } elseif ($name == 'complexType') {
-                $newPart = new PiBX_ParseTree_ComplexTypeNode($child, $level);
-            } elseif ($name == 'sequence') {
-                $newPart = new PiBX_ParseTree_SequenceNode($child, $level);
-            } elseif ($name == 'choice') {
-                $newPart = new PiBX_ParseTree_ChoiceNode($child, $level);
-            } elseif ($name == 'restriction') {
-                $newPart = new PiBX_ParseTree_RestrictionNode($child, $level);
-            } elseif ($name == 'enumeration') {
-                $newPart = new PiBX_ParseTree_EnumerationNode($child, $level);
-            } elseif ($name == 'attribute') {
-                $newPart = new PiBX_ParseTree_AttributeNode($child, $level);
+            switch ($name) {
+                case 'element':
+                    $newPart = new PiBX_ParseTree_ElementNode($child, $level);
+                    $attributes = $child->attributes();
+
+                    $type = (string) $attributes['type'];
+                    $type = $this->getStringWithoutNamespace($type);
+
+                    $this->typeUsage->addType($type);
+                    break;
+                default:
+                    $className = 'PiBX_ParseTree_' . ucfirst($name) . 'Node';
+                    if (class_exists($className)) {
+                        $newPart = new $className($child, $level);
+                        print "Added new part: $name on level $level.\n";
+                    } else {
+                        print "Unknown node: $name\n";
+                        // @TODO: add simple-xml-error message
+                        throw new Exception("Invalid XSD");
+                    }
+                    break;
             }
 
             $this->parseSchemaNodes($child, $newPart, $level+1);
