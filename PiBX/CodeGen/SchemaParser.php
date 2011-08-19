@@ -132,7 +132,7 @@ class PiBX_CodeGen_SchemaParser {
                     $className = 'PiBX_ParseTree_' . ucfirst($name) . 'Node';
                     if (class_exists($className)) {
                         $newPart = new $className($child, $level);
-                        print "Added new part: $name on level $level.\n";
+                        //print "Added new part: $name on level $level.\n";
                     } else {
                         print "Unknown node: $name\n";
                         // @TODO: add simple-xml-error message

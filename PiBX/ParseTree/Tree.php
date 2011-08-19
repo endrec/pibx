@@ -35,7 +35,7 @@ if (!function_exists('__autoload')) {
      */
     function __autoload($class_name) {
         if (preg_match('|PiBX_ParseTree_[A-Z][a-zA-Z]+Node|', $class_name)) {
-            print $class_name . " will be loaded.\n";
+            //print $class_name . " will be loaded.\n";
             require_once strtr($class_name, '_', '/') . '.php';
         }
         if (!class_exists($class_name, false)) {

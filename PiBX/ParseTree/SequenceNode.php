@@ -52,6 +52,8 @@ class PiBX_ParseTree_SequenceNode extends PiBX_ParseTree_Tree {
                 if ($max === 'unbounded') {
                     return -1;
                 }
+//            } elseif ($child instanceof PiBX_ParseTree_ChoiceNode) {
+//                ;
             } else {
                 throw new RuntimeException('Currently not supported');
             }

@@ -280,7 +280,7 @@ class PiBX_CodeGen_ASTCreator implements PiBX_ParseTree_Visitor_VisitorAbstract 
     function visitComplexTypeNode(PiBX_ParseTree_Tree $tree) {
         $this->plowTypesForLevel($tree->getLevel());
         $logMessage = $tree->getLevel() . str_pad("  ", $tree->getLevel()) . " ";
-        $logMessage .= "complex";
+        $logMessage .= "complex [".get_class($this->currentType())."]";
 
         if ($tree->getLevel() == 0) {
             $logMessage .= " - global";
@@ -306,7 +306,7 @@ class PiBX_CodeGen_ASTCreator implements PiBX_ParseTree_Visitor_VisitorAbstract 
     function visitSequenceNode(PiBX_ParseTree_Tree $tree) {
         $this->plowTypesForLevel($tree->getLevel());
         $logMessage = $tree->getLevel() . " ". str_pad("  ", $tree->getLevel()) . " ";
-        $logMessage .= "sequence (".$tree->getElementCount().")";
+        $logMessage .= "sequence [".get_class($this->currentType())."] (".$tree->getElementCount().")";
         $this->log($logMessage);
 
         if ($this->currentType() instanceof PiBX_AST_Type) {
@@ -324,6 +324,9 @@ class PiBX_CodeGen_ASTCreator implements PiBX_ParseTree_Visitor_VisitorAbstract 
             $sf = new PiBX_CodeGen_ASTStackFrame($tree->getLevel(), $c);
             array_push($this->stack, $sf);
         } else {
+            print "Class: " . get_class($this->currentType()) . "\n";
+            print "Name: " . $this->currentType()->getName() . "\n";
+            print "Element count: ".$tree->getElementCount() . "\n";
             throw new RuntimeException('invalid sequence state');
         }
 
@@ -408,7 +411,7 @@ class PiBX_CodeGen_ASTCreator implements PiBX_ParseTree_Visitor_VisitorAbstract 
 
     private function log($message) {
         //TODO add log4php support
-        //echo $message . "\n";
+        echo $message . "\n";
     }
 }
 

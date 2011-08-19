@@ -93,11 +93,12 @@ class PiBX_CodeGen {
         print "Generating classes to: ./output\n";
         $generator = new PiBX_CodeGen_ClassGenerator();
 
-        if ($options['typechecks'] === true) {
+        if (isset($options['typechecks']) && $options['typechecks'] === true) {
             $generator->enableTypeChecks();
         }
         
         foreach ($typeList as &$type) {
+            //print "Generating " .$type->getName(). "\n";
             $type->accept($generator);
         }
 
@@ -106,6 +107,7 @@ class PiBX_CodeGen {
         }
         
         foreach ($generator->getClasses() as $className => $classCode) {
+            //print "Saving " .$className. "\n";
             $code = "<?php\n" . $classCode;
             
             file_put_contents('output/' . $className . '.php', $code);
